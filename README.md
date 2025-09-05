@@ -1,83 +1,119 @@
-# Achievement File Watcher
 
-This script collaborates with Nemirtingas GOG emulator to monitor and modify the `achievements.json` file, enabling achievement notifications in GOG games. It has been tested with **Yakuza: Like a Dragon**.
+# GOG → Goldberg Achievement Watcher
 
-## Overall Setup Instructions
+This script works with **Nemirtingas GOG emulator** and the **Goldberg Steam Emulator** to let you see achievement notifications from GOG games inside your prefered achievement watcher.  
 
-1. **Place the GOG Emulator**: Copy the `galaxy64.dll` by Nemirtingas to the respective GOG game folder (File is inside the repository). In-game, press **Shift+F4** to activate the overlay and verify it's working.
-   - **Note**: API versions above **1.152.1.0** are not supported by the emulator. Newer games will not be handled, and the script won't function without this emulator version.
-
-2. **Download and Set Up Achievement Watcher**: Ensure Achievements Watcher is installed and configured correctly (https://github.com/xan105/Achievement-Watcher).
-
-3. **Use the Script**:
-   - Locate the `achievements.json` file of your GOG game. The script will default to the expected directory, so you’ll start in the right location.
-   - For the destination, create a folder named with the game’s Steam ID inside the Goldberg folder. The script defaults to this location, making it easier to set up.
-   - Example configuration for **Yakuza: Like a Dragon**:
-     ```json
-     {
-       "path_to_watch": "C:/Users/<USERNAME>/AppData/Roaming/NemirtingasGalaxyEmu/<EMU_ID>/1229228729/achievements.json",
-       "destination_dir": "C:/Users/<USERNAME>/AppData/Roaming/Goldberg SteamEmu Saves/1235140"
-     }
-     ```
-
-## Features
-
-- **File Monitoring**: Uses `watchdog` to monitor the specified `achievements.json` file for modifications.
-- **JSON Processing**: Reads and modifies the JSON file by setting all achievements as earned with the original unlock time.
-- **User Interface**: A simple GUI using `tkinter` allows the user to select the file and destination directory if not already configured.
-- **Configuration**: Configuration is saved in a `config.json` file, allowing the script to remember previous selections.
-
-## Screenshot
-![Yakuza 7 Achievements](https://i.imgur.com/vMHSP0r.png)
-
-
-
-## Requirements
-
-- Python 3.x
-- Required packages: `watchdog`, `tkinter`
-
-To install `watchdog`, use:
-
-```bash
-pip install watchdog
-```
-
-## How to Use
-
-1. **Run the Script**: Execute the script using Python:
-   ```bash
-   python Achievements_Fixer.py
-   ```
-   
-2. **Select Files and Directories**: If no paths are saved in the configuration, the script will prompt you to select:
-   - The `achievements.json` file to monitor.
-   - The destination directory where the modified file will be saved.
-
-3. **File Monitoring**: The script will then monitor the selected file for any modifications. If changes are detected:
-   - The script reads the file, modifies the data to mark achievements as earned, and saves it to the destination directory.
-
-## Compatibility
-
-- This script works in collaboration with **Nemirtingas GOG emulator** to enable achievement notifications for GOG games.
-- **Tested in Yakuza: Like a Dragon** for functionality and proper achievement notifications.
-
-## Notes
-
-- Make sure the `achievements.json` file is not empty, as the script will skip processing if it is.
-- If the file contains invalid JSON, the script will log an error and continue monitoring for further changes.
-
-## Troubleshooting
-
-- **No File Selected Warning**: If you do not select a file or directory, the script will display a warning and exit.
-- **JSON Decode Error**: If the `achievements.json` file is not properly formatted, the script will log a message and skip processing until the next modification.
-
-## Dependencies
-
-- `watchdog`: For monitoring file changes.
-- `tkinter`: For the graphical file and directory selection dialog.
-- `json`: For reading and writing JSON data.
+It has been tested with **Yakuza: Like a Dragon** and other GOG releases.
 
 ---
 
-This version includes the detailed setup process and configuration example to guide users through the initial setup.
+## Overall Setup Instructions
+
+1. **Patch the GOG game**  
+   - Copy `galaxy.dll` or `galaxy64.dll` by Nemirtingas into the game’s install folder.  
+   - In-game, press **Shift+F4** to check if the overlay works. 
+   - If the program detects an unpatched DLL, it can patch it for you automatically (with backup).  
+   - **Note:** Only emulator API version **1.152.1.0** is supported. Newer games may not work. (more specifically the achievements are listed as "null", unlock detection is nonfunctional)
+
+2. **Install Achievement Watcher**  
+   Download and configure any achievement watcher of your choice, the achievment watcher must be compatible with Goldberg Emu.
+
+3. **Use the Script**  
+   - Run the script with Python:
+     ```bash
+     python Achievements_Fixer.py
+     ```
+   - Add a GOG game by selecting its **launch shortcut (.lnk)** from the game directory.  
+     - The program will automatically detect the **game name** and **GOG ID**.  
+     - You must manually enter the **Steam ID** (get it from [SteamDB](https://steamdb.info/)).  
+
+   Example setup for **Yakuza: Like a Dragon**:
+   ```json
+   {
+     "game_name": "Yakuza: Like a Dragon", # (automatically detected)
+     "gog_id": "1229228729", # (automatically detected)
+     "steam_id": "1235140" # (must be set manually)
+   }
+   ```
+
+---
+
+## Features
+
+- **Easy Game Setup**  
+  Add a GOG game by picking its shortcut. No need to hunt for IDs manually except the Steam ID.  
+
+- **Automatic DLL Patching**  
+  The script checks and patches `galaxy.dll` / `galaxy64.dll` if they aren’t already patched for achievements.  
+
+- **Process Detection**  
+  When you launch a configured game, the script notices and automatically begins monitoring that game’s achievement file.  
+
+- **Achievement Syncing**  
+  Copies unlocked achievements from the GOG emulator into the correct Goldberg folder so Achievement Watcher shows notifications.  
+
+- **Saved Config**  
+  Your games and Steam IDs are stored in `gog_goldberg_config.json`. You don’t need to re-add them every time.  
+
+---
+
+## Screenshot
+
+![Yakuza 7 Achievements](https://i.imgur.com/vMHSP0r.png)
+
+---
+
+## Requirements
+
+- Windows (for `.lnk` shortcuts and DLLs)  
+- Python 3.x  
+- Required packages:
+  ```bash
+  pip install psutil watchdog pywin32
+  ```
+
+---
+
+## How to Use
+
+1. **Run the Script**  
+   ```bash
+   python Achievements_Fixer.py
+   ```
+
+2. **Add Your Game**  
+   - Click **“Add .lnk”** and select the game’s shortcut from its install folder.  
+   - Enter the Steam ID when prompted.  
+
+3. **Start Monitoring**  
+   - Press **“Start Monitoring.”**  
+   - When you launch a configured GOG game, the program will automatically begin syncing its achievements.  
+
+4. **Play & Unlock Achievements**  
+   - Achievements will be copied to the correct Goldberg folder.  
+   - Achievement Watcher will display notifications just like on Steam.  
+
+---
+
+## Compatibility
+
+- Works only with **Nemirtingas GOG emulator** and Goldberg SteamEmu.  
+- Tested with **Yakuza: Like a Dragon**.  
+- Should work with most older GOG titles that use the supported API version.
+
+---
+
+## Troubleshooting
+
+- **Achievements not showing** → Make sure DLLs are patched, Steam ID is correct, and Achievement Watcher is running.  
+- **Removing a game** → Select it in the list and click *Remove*.  
+- **Editing Steam ID** → Select the game and click *Edit Steam ID*.  
+- Invalid or empty `achievements.json` files are skipped until valid data appears.
+
+---
+
+## Explaination
+
+- **Valid achievement watchers** → [Hydra Launcher](https://hydralauncher.gg/) (more up to date achievement detection), [Achievement Watcher](https://xan105.github.io/Achievement-Watcher/) (outdated and achievement detection can be spotty)
+- **Goldberg Requirement** → This script does not require goldberg steam emu at all, it simply translates Galaxy Emu achievements to goldbergs format then updates the goldberg achievements folder that achievement watchers look for, the achievement watcher thinks you unlocked a goldberg achievement for that game, unlocking the achievement for that game, despite being a GOG game.
+ 
