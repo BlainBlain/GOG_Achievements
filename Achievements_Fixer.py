@@ -271,7 +271,7 @@ class WatcherManager:
         self.handler = None
         self.queue = queue
         self.watched_path = None
-        self.lock = threading.Lock()
+        self.lock = threading.RLock()
 
     def stop(self):
         with self.lock:
@@ -565,3 +565,4 @@ if __name__ == "__main__":
     app = App(root)
     root.protocol("WM_DELETE_WINDOW", lambda: (app.stop_monitoring(), root.destroy()))
     root.mainloop()
+
